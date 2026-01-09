@@ -75,4 +75,42 @@ fun HomeScreen(
                 )
             }
         }
-    )
+    ) { innerPadding ->
+        HomeBody(
+            statusUiSiswa = viewModel.statusUiSiswa,
+            onSiswaClick = navigateToItemUpdate,
+            retryAction = viewModel::loadSiswa,
+            modifier = modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        )
+    }
+}
+
+@Composable
+fun HomeBody(
+    statusUiSiswa: StatusUiSiswa,
+    //edit 2.3 tambahkan parameter onSiswaClick
+    onSiswaClick: (Int) -> Unit,
+    retryAction: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
+        when (statusUiSiswa) {
+            is StatusUiSiswa.Loading -> LoadingScreen()
+            //edit 2.5 tambahkan event onSiswaClick
+            is StatusUiSiswa.Success -> DaftarSiswa(
+                itemSiswa = statusUiSiswa.siswa,
+                onSiswaClick = { onSiswaClick(it.id.toInt()) }
+            )
+            is StatusUiSiswa.Error -> ErrorScreen(
+                retryAction = retryAction,
+                modifier = modifier.fillMaxSize()
+            )
+        }
+    }
+}
+
